@@ -48,25 +48,30 @@ def main():
     cost_per_second = cost_per_call / original_aht
     total_cost_per_day = cost_per_second * simulated_call_duration * calls_per_day
     
+    # Original and Simulated Metrics DataFrames
+    original_metrics = {
+        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time"],
+        "Values": [original_aht, original_non_talk_time, original_asa, original_wrap_up_time]
+    }
+    simulated_metrics = {
+        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time", "Simulated Call Duration"],
+        "Simulated Value": [simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration]
+    }
+    
     # Display section
     st.write("## Results")
     st.write("### Original Metrics")
-    st.write(f"- AHT: {original_aht:.2f}")
-    st.write(f"- Non-Talk Time: {original_non_talk_time:.2f}")
-    st.write(f"- ASA: {original_asa:.2f}")
-    st.write(f"- Wrap Up Time: {original_wrap_up_time:.2f}")
+    st.dataframe(data=original_metrics, width=400)
     st.write("### Simulated Metrics")
-    st.write(f"- Simulated AHT: {simulated_aht:.2f}")
-    st.write(f"- Simulated Non-Talk Time: {simulated_non_talk_time:.2f}")
-    st.write(f"- Simulated ASA: {simulated_asa:.2f}")
-    st.write(f"- Simulated Wrap Up Time: {simulated_wrap_up_time:.2f}")
-    st.write(f"- Simulated Call Duration: {simulated_call_duration:.2f}")
+    st.dataframe(data=simulated_metrics, width=400)
+    
+    # Cost analysis section
     st.write("### Cost Analysis")
     st.write(f"- Total Cost per Day: ${total_cost_per_day:.2f}")
     
     # ROI realization section
     seconds_saved_all_calls = (original_aht - simulated_call_duration) * calls_per_day
-    value_realised_per_call = cost_per_second * (original_aht - simulated_call_duration)
+    value_realised_per_call = cost_per_second * (original_aht - simulated_aht)
     value_realised_all_calls = value_realised_per_call * calls_per_day
     capacity_realised_all_calls = seconds_saved_all_calls / 86400  # Converting seconds to days
     
@@ -78,4 +83,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
