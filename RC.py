@@ -46,7 +46,7 @@ def main():
     # Calculation section
     simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration = calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent)
     cost_per_second = cost_per_call / original_aht
-    total_cost_per_day = cost_per_second * simulated_call_duration * calls_per_day
+    total_cost_per_day = cost_per_second * original_aht * calls_per_day
     
     # Original and Simulated Metrics DataFrames
     original_metrics = {
@@ -71,7 +71,7 @@ def main():
     
     # ROI realization section
     seconds_saved_all_calls = (original_aht - simulated_call_duration) * calls_per_day
-    value_realised_per_call = cost_per_second * (original_aht - simulated_aht)
+    value_realised_per_call = cost_per_second * reduction_percent * original_aht / 100
     value_realised_all_calls = value_realised_per_call * calls_per_day
     capacity_realised_all_calls = seconds_saved_all_calls / 86400  # Converting seconds to days
     
