@@ -32,13 +32,13 @@ def main():
     
     # User input section
     st.sidebar.title("Input Metrics")
-    original_aht = aht = st.sidebar.number_input("AHT", value=450.00, format="%.2f")
-    original_non_talk_time = non_talk_time = st.sidebar.number_input("Non-Talk Time", value=90.00, format="%.2f")
-    original_asa = asa = st.sidebar.number_input("ASA", value=31.00, format="%.2f")
-    original_wrap_up_time = wrap_up_time = st.sidebar.number_input("Wrap Up Time", value=31.00, format="%.2f")
+    aht = st.sidebar.number_input("AHT", value=450.00, format="%.2f")
+    non_talk_time = st.sidebar.number_input("Non-Talk Time", value=90.00, format="%.2f")
+    asa = st.sidebar.number_input("ASA", value=31.00, format="%.2f")
+    wrap_up_time = st.sidebar.number_input("Wrap Up Time", value=31.00, format="%.2f")
     
     cost_per_call = st.sidebar.number_input("Cost per Call (Fully loaded)", value=15.0, format="%.2f")
-    cost_per_second = cost_per_call / original_aht
+    cost_per_second = cost_per_call / aht
     
     calls_per_day = st.sidebar.number_input("Calls per Day", value=10000)
     
@@ -53,10 +53,10 @@ def main():
     
     # Display section
     st.write("## Original Metrics")
-    st.write("- AHT:", original_aht)
-    st.write("- Non-Talk Time:", original_non_talk_time)
-    st.write("- ASA:", original_asa)
-    st.write("- Wrap Up Time:", original_wrap_up_time)
+    st.write("- AHT:", aht)
+    st.write("- Non-Talk Time:", non_talk_time)
+    st.write("- ASA:", asa)
+    st.write("- Wrap Up Time:", wrap_up_time)
     
     st.write("## Simulated Metrics")
     st.write("- AHT:", simulated_aht)
