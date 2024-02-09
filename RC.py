@@ -9,12 +9,19 @@ Original file is located at
 import streamlit as st
 
 # Function to calculate simulated values
-def calculate_simulated_values(call_duration, reduction_percent):
-    reduction = call_duration * reduction_percent / 100
+def calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent):
+    aht_reduction = aht * reduction_percent / 100
+    non_talk_time_reduction = non_talk_time * reduction_percent / 100
+    asa_reduction = asa * reduction_percent / 100
+    wrap_up_reduction = wrap_up_time * reduction_percent / 100
     
-    simulated_call_duration = round(call_duration - reduction, 2)
+    simulated_aht = round(aht - aht_reduction, 2)
+    simulated_non_talk_time = round(non_talk_time - non_talk_time_reduction, 2)
+    simulated_asa = round(asa - asa_reduction, 2)
+    simulated_wrap_up_time = round(wrap_up_time - wrap_up_reduction, 2)
+    simulated_call_duration = round(simulated_aht + simulated_non_talk_time + simulated_asa + simulated_wrap_up_time, 2)
     
-    return simulated_call_duration
+    return simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration
 
 # Main function
 def main():
@@ -25,55 +32,51 @@ def main():
     
     # User input section
     st.sidebar.title("Input Metrics")
-    original_call_duration = call_duration = st.sidebar.number_input("Original Call Duration", value=602.00, format="%.2f")
-    original_aht = aht = st.sidebar.number_input("Original AHT", value=450.00, format="%.2f")
-    original_non_talk_time = non_talk_time = st.sidebar.number_input("Original Non-Talk Time", value=90.00, format="%.2f")
-    original_asa = asa = st.sidebar.number_input("Original ASA", value=31.00, format="%.2f")
-    original_wrap_up_time = wrap_up_time = st.sidebar.number_input("Original Wrap Up Time", value=31.00, format="%.2f")
+    original_aht = aht = st.sidebar.number_input("AHT", value=450.00, format="%.2f")
+    original_non_talk_time = non_talk_time = st.sidebar.number_input("Non-Talk Time", value=90.00, format="%.2f")
+    original_asa = asa = st.sidebar.number_input("ASA", value=31.00, format="%.2f")
+    original_wrap_up_time = wrap_up_time = st.sidebar.number_input("Wrap Up Time", value=31.00, format="%.2f")
     
     cost_per_call = st.sidebar.number_input("Cost per Call (Fully loaded)", value=15.0, format="%.2f")
+    cost_per_second = cost_per_call / original_aht
+    
     calls_per_day = st.sidebar.number_input("Calls per Day", value=10000)
     
     # Slider section
     reduction_percent = st.slider("Reduction Percentage", min_value=1, max_value=100, step=1, value=1)
     
     # Calculation section
-    simulated_call_duration = calculate_simulated_values(call_duration, reduction_percent)
-    cost_per_second = cost_per_call / original_call_duration
-    total_cost_per_day = cost_per_second * original_call_duration * calls_per_day
+    simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration = calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent)
+    
+    total_seconds_saved = (original_aht + original_non_talk_time + original_asa + original_wrap_up_time - simulated_call_duration) * calls_per_day
+    value_realised = total_seconds_saved * cost_per_second
+    
+    # Original and Simulated Metrics DataFrames
+    original_metrics = {
+        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time"],
+        "Values": [original_aht, original_non_talk_time, original_asa, original_wrap_up_time]
+    }
+    simulated_metrics = {
+        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time", "Simulated Call Duration"],
+        "Values": [simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration]
+    }
     
     # Display section
     st.write("## Results")
     st.write("### Original Metrics")
-    st.write(f"- Original Call Duration: {original_call_duration:.2f}")
-    st.write(f"- Original AHT: {original_aht:.2f}")
-    st.write(f"- Original Non-Talk Time: {original_non_talk_time:.2f}")
-    st.write(f"- Original ASA: {original_asa:.2f}")
-    st.write(f"- Original Wrap Up Time: {original_wrap_up_time:.2f}")
-    
-    # Simulated Metrics
+    st.dataframe(data=original_metrics, width=400)
     st.write("### Simulated Metrics")
-    st.write(f"- Simulated Call Duration: {simulated_call_duration:.2f}")
-    st.write(f"- Simulated AHT: {original_aht:.2f}")
-    st.write(f"- Simulated Non-Talk Time: {original_non_talk_time:.2f}")
-    st.write(f"- Simulated ASA: {original_asa:.2f}")
-    st.write(f"- Simulated Wrap Up Time: {original_wrap_up_time:.2f}")
+    st.dataframe(data=simulated_metrics, width=400)
     
     # Cost analysis section
     st.write("### Cost Analysis")
-    st.write(f"- Total Cost per Day: ${total_cost_per_day:.2f}")
+    st.write(f"- Total Cost per Day: ${cost_per_call:.2f}")
+    st.write(f"- Cost per Second: ${cost_per_second:.5f}")
     
     # ROI realization section
-    seconds_saved_all_calls = (original_call_duration - simulated_call_duration) * calls_per_day
-    value_realised_per_call = cost_per_second * (original_call_duration - simulated_call_duration)
-    value_realised_all_calls = value_realised_per_call * calls_per_day
-    capacity_realised_all_calls = seconds_saved_all_calls / 86400  # Converting seconds to days
-    
     st.write("## ROI Realization")
-    st.write(f"- Seconds Saved per Call: {original_call_duration - simulated_call_duration:.2f}")
-    st.write(f"- Value Realised per Call: ${value_realised_per_call:.2f}")
-    st.write(f"- Total Value Realised All Calls: ${value_realised_all_calls:.2f}")
-    st.write(f"- Capacity Realised All Calls: {capacity_realised_all_calls:.2f}")
+    st.write(f"- Total Seconds Saved: {total_seconds_saved:.2f}")
+    st.write(f"- Value Realised: ${value_realised:.2f}")
 
 if __name__ == "__main__":
     main()
