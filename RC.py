@@ -48,28 +48,25 @@ def main():
     # Calculation section
     simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration = calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent)
     
-    total_seconds_saved = (original_aht + original_non_talk_time + original_asa + original_wrap_up_time - simulated_call_duration) * calls_per_day
+    total_seconds_saved = (aht + non_talk_time + asa + wrap_up_time - simulated_call_duration) * calls_per_day
     value_realised = total_seconds_saved * cost_per_second
     
-    # Original and Simulated Metrics DataFrames
-    original_metrics = {
-        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time"],
-        "Values": [original_aht, original_non_talk_time, original_asa, original_wrap_up_time]
-    }
-    simulated_metrics = {
-        "Metric": ["AHT", "Non-Talk Time", "ASA", "Wrap Up Time", "Simulated Call Duration"],
-        "Values": [simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration]
-    }
-    
     # Display section
-    st.write("## Results")
-    st.write("### Original Metrics")
-    st.dataframe(data=original_metrics, width=400)
-    st.write("### Simulated Metrics")
-    st.dataframe(data=simulated_metrics, width=400)
+    st.write("## Original Metrics")
+    st.write("- AHT:", original_aht)
+    st.write("- Non-Talk Time:", original_non_talk_time)
+    st.write("- ASA:", original_asa)
+    st.write("- Wrap Up Time:", original_wrap_up_time)
+    
+    st.write("## Simulated Metrics")
+    st.write("- AHT:", simulated_aht)
+    st.write("- Non-Talk Time:", simulated_non_talk_time)
+    st.write("- ASA:", simulated_asa)
+    st.write("- Wrap Up Time:", simulated_wrap_up_time)
+    st.write("- Simulated Call Duration:", simulated_call_duration)
     
     # Cost analysis section
-    st.write("### Cost Analysis")
+    st.write("## Cost Analysis")
     st.write(f"- Total Cost per Day: ${cost_per_call:.2f}")
     st.write(f"- Cost per Second: ${cost_per_second:.5f}")
     
