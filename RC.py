@@ -15,60 +15,67 @@ def calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_
     non_talk_time_reduction = non_talk_time * reduction_percent / 100
     asa_reduction = asa * reduction_percent / 100
     wrap_up_reduction = wrap_up_time * reduction_percent / 100
-
-    simulated_call_duration = (aht - aht_reduction) + (non_talk_time - non_talk_time_reduction) + (asa - asa_reduction) + (wrap_up_time - wrap_up_reduction)
-
-    return simulated_call_duration
+    
+    simulated_aht = round(aht - aht_reduction, 2)
+    simulated_non_talk_time = round(non_talk_time - non_talk_time_reduction, 2)
+    simulated_asa = round(asa - asa_reduction, 2)
+    simulated_wrap_up_time = round(wrap_up_time - wrap_up_reduction, 2)
+    simulated_call_duration = round(simulated_aht + simulated_non_talk_time + simulated_asa + simulated_wrap_up_time, 2)
+    
+    return simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration
 
 # Main function
 def main():
     st.title("Key Metric Reduction Simulation & ROI Realization")
-
+    
     # Add logo on the top right-hand side
     st.image("https://humach.com/wp-content/uploads/2023/01/HuMach_logo-bold.png", width=80, use_column_width=False, caption=None, output_format='auto')
-
+    
     # User input section
     st.sidebar.title("Input Metrics")
-    aht = st.sidebar.number_input("AHT", value=450)
-    non_talk_time = st.sidebar.number_input("Non-Talk Time", value=90)
-    asa = st.sidebar.number_input("ASA", value=31)
-    wrap_up_time = st.sidebar.number_input("Wrap Up Time", value=31)
-
+    aht = st.sidebar.number_input("AHT", value=450.00, format="%.2f")
+    non_talk_time = st.sidebar.number_input("Non-Talk Time", value=90.00, format="%.2f")
+    asa = st.sidebar.number_input("ASA", value=31.00, format="%.2f")
+    wrap_up_time = st.sidebar.number_input("Wrap Up Time", value=31.00, format="%.2f")
+    
     cost_per_call = st.sidebar.number_input("Cost per Call (Fully loaded)", value=15.0)
     calls_per_day = st.sidebar.number_input("Calls per Day", value=10000)
-
+    
     # Slider section
     reduction_percent = st.slider("Reduction Percentage", min_value=1, max_value=100, step=1, value=1)
-
+    
     # Calculation section
-    simulated_call_duration = calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent)
+    simulated_aht, simulated_non_talk_time, simulated_asa, simulated_wrap_up_time, simulated_call_duration = calculate_simulated_values(aht, non_talk_time, asa, wrap_up_time, reduction_percent)
     cost_per_second = cost_per_call / aht
     total_cost_per_day = cost_per_second * simulated_call_duration * calls_per_day
-
+    
     # Display section
     st.write("## Results")
     st.write("### Original Metrics")
-    st.write(f"- AHT: {aht}")
-    st.write(f"- Non-Talk Time: {non_talk_time}")
-    st.write(f"- ASA: {asa}")
-    st.write(f"- Wrap Up Time: {wrap_up_time}")
+    st.write(f"- AHT: {aht:.2f}")
+    st.write(f"- Non-Talk Time: {non_talk_time:.2f}")
+    st.write(f"- ASA: {asa:.2f}")
+    st.write(f"- Wrap Up Time: {wrap_up_time:.2f}")
     st.write("### Simulated Metrics")
-    st.write(f"- Simulated Call Duration: {simulated_call_duration}")
+    st.write(f"- Simulated AHT: {simulated_aht:.2f}")
+    st.write(f"- Simulated Non-Talk Time: {simulated_non_talk_time:.2f}")
+    st.write(f"- Simulated ASA: {simulated_asa:.2f}")
+    st.write(f"- Simulated Wrap Up Time: {simulated_wrap_up_time:.2f}")
+    st.write(f"- Simulated Call Duration: {simulated_call_duration:.2f}")
     st.write("### Cost Analysis")
-    st.write(f"- Total Cost per Day: {total_cost_per_day}")
-
+    st.write(f"- Total Cost per Day: {total_cost_per_day:.2f}")
+    
     # ROI realization section
     seconds_saved_all_calls = (aht - simulated_call_duration) * calls_per_day
     value_realised_per_call = cost_per_second * (aht - simulated_call_duration)
     value_realised_all_calls = value_realised_per_call * calls_per_day
     capacity_realised_all_calls = seconds_saved_all_calls / 86400  # Converting seconds to days
-
+    
     st.write("## ROI Realization")
-    st.write(f"- Seconds Saved per Call: {aht - simulated_call_duration}")
-    st.write(f"- Value Realised per Call: {value_realised_per_call}")
-    st.write(f"- Total Value Realised All Calls: {value_realised_all_calls}")
-    st.write(f"- Capacity Realised All Calls: {capacity_realised_all_calls}")
+    st.write(f"- Seconds Saved per Call: {aht - simulated_call_duration:.2f}")
+    st.write(f"- Value Realised per Call: {value_realised_per_call:.2f}")
+    st.write(f"- Total Value Realised All Calls: {value_realised_all_calls:.2f}")
+    st.write(f"- Capacity Realised All Calls: {capacity_realised_all_calls:.2f}")
 
 if __name__ == "__main__":
     main()
-
